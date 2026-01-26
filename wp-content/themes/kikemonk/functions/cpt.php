@@ -40,6 +40,7 @@ function register_custom_post_types() {
         'publicly_queryable'    => true,
         'capability_type'       => 'post',
         'show_in_rest'          => true,
+        'taxonomies'            => ['post_tag'],
     ];
     register_post_type('lugares', $args_lugares);
 
@@ -52,12 +53,13 @@ function register_custom_post_types() {
     $args_eventos = [
         'label'                 => __('Evento', 'kikemonk'),
         'labels'                => $labels_eventos,
-        'supports'              => ['title', 'thumbnail'], // Removed 'editor'
+        'supports'              => ['title', 'thumbnail', 'excerpt'], // Removed 'editor'
         'public'                => true,
         'show_in_menu'          => true,
         'menu_icon'             => 'dashicons-calendar-alt',
         'has_archive'           => true,
         'show_in_rest'          => true,
+        'taxonomies'            => ['post_tag'],
     ];
     register_post_type('eventos', $args_eventos);
 

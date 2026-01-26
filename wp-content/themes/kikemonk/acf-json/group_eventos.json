@@ -41,6 +41,54 @@
             "rows": 2
         },
         {
+            "key": "field_evt_cost_type",
+            "label": "Costo",
+            "name": "costo_tipo",
+            "type": "radio",
+            "choices": {
+                "free": "Gratis / Entrada Libre",
+                "paid": "Con Costo"
+            },
+            "default_value": "free",
+            "layout": "horizontal"
+        },
+        {
+            "key": "field_evt_cost_val",
+            "label": "Detalle del Costo",
+            "name": "costo_valor",
+            "type": "text",
+            "instructions": "Ej: $50 MXN (Solo si seleccionaste Con Costo)",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_evt_cost_type",
+                        "operator": "==",
+                        "value": "paid"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_evt_whatsapp",
+            "label": "WhatsApp para Reservas",
+            "name": "whatsapp",
+            "type": "text",
+            "instructions": "Número con lada para reservar."
+        },
+        {
+            "key": "field_evt_gallery",
+            "label": "Galería",
+            "name": "galeria",
+            "type": "gallery",
+            "return_format": "array"
+        },
+        {
+            "key": "field_evt_tips",
+            "label": "Tips / Recomendaciones",
+            "name": "tips",
+            "type": "textarea"
+        },
+        {
             "key": "field_65abc12345695",
             "label": "Link o CTA",
             "name": "link_cta",

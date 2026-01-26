@@ -1,0 +1,232 @@
+{
+    "key": "group_65abc12345690",
+    "title": "Datos del Evento",
+    "fields": [
+        {
+            "key": "field_65abc12345691",
+            "label": "Fecha",
+            "name": "fecha",
+            "aria-label": "",
+            "type": "date_picker",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "d\/m\/Y",
+            "return_format": "d\/m\/Y"
+        },
+        {
+            "key": "field_65abc12345692",
+            "label": "Hora",
+            "name": "hora",
+            "aria-label": "",
+            "type": "time_picker",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "H:i",
+            "return_format": "H:i"
+        },
+        {
+            "key": "field_65abc12345693",
+            "label": "Ubicación (Texto)",
+            "name": "ubicacion",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            }
+        },
+        {
+            "key": "field_65abc12345699_map",
+            "label": "Ubicación (Mapa)",
+            "name": "ubicacion_mapa",
+            "aria-label": "",
+            "type": "leaflet_map",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "center_lat": "16.7371",
+            "center_lng": "-92.6376",
+            "zoom": 14
+        },
+        {
+            "key": "field_65abc12345694",
+            "label": "Descripción corta",
+            "name": "descripcion_corta",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "rows": 2
+        },
+        {
+            "key": "field_evt_cost_type",
+            "label": "Costo",
+            "name": "costo_tipo",
+            "aria-label": "",
+            "type": "radio",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "free": "Gratis \/ Entrada Libre",
+                "paid": "Con Costo"
+            },
+            "default_value": "free",
+            "layout": "horizontal"
+        },
+        {
+            "key": "field_evt_cost_val",
+            "label": "Detalle del Costo",
+            "name": "costo_valor",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Ej: $50 MXN (Solo si seleccionaste Con Costo)",
+            "required": false,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_evt_cost_type",
+                        "operator": "==",
+                        "value": "paid"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            }
+        },
+        {
+            "key": "field_evt_whatsapp",
+            "label": "WhatsApp para Reservas",
+            "name": "whatsapp",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Número con lada para reservar.",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            }
+        },
+        {
+            "key": "field_evt_gallery",
+            "label": "Galería",
+            "name": "galeria",
+            "aria-label": "",
+            "type": "gallery",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array"
+        },
+        {
+            "key": "field_evt_tips",
+            "label": "Tips \/ Recomendaciones",
+            "name": "tips",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            }
+        },
+        {
+            "key": "field_65abc12345695",
+            "label": "Link o CTA",
+            "name": "link_cta",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            }
+        },
+        {
+            "key": "field_65abc12345696",
+            "label": "Descripción Larga",
+            "name": "descripcion_larga",
+            "aria-label": "",
+            "type": "wysiwyg",
+            "instructions": "Información detallada del evento para la página individual.",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "eventos"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": [],
+    "active": true,
+    "description": "",
+    "show_in_rest": false,
+    "display_title": "",
+    "modified": 1769444961
+}

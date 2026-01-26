@@ -18,12 +18,18 @@
 
 <main class="bg-white dark:bg-slate-900 transition-colors duration-300">
     <!-- Hero Section -->
-    <div class="relative h-[50vh] min-h-[400px] w-full overflow-hidden">
-        <?php if (has_post_thumbnail()) : ?>
-            <?php the_post_thumbnail('full', ['class' => 'absolute inset-0 w-full h-full object-cover']); ?>
-        <?php else : ?>
-            <img src="https://loremflickr.com/1200/800/san-cristobal" class="absolute inset-0 w-full h-full object-cover" alt="<?php the_title(); ?>">
-        <?php endif; ?>
+    <?php 
+    // Image Logic: Featured > Gallery[0] > Logo
+    $hero_image = get_template_directory_uri() . '/assets/img/logo.jpg'; // Default
+    if (has_post_thumbnail()) {
+        $hero_image = get_the_post_thumbnail_url(get_the_ID(), 'full');
+    } elseif ($gallery && is_array($gallery) && !empty($gallery)) {
+        $hero_image = $gallery[0]['url'];
+    }
+    ?>
+    <div class="relative h-[60vh] min-h-[500px] w-full overflow-hidden flex items-end">
+        <img src="<?php echo esc_url($hero_image); ?>" class="absolute inset-0 w-full h-full object-cover" alt="<?php the_title(); ?>">
+        
         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
         <div class="absolute bottom-0 left-0 w-full p-8 md:p-16">
             <div class="container mx-auto">
@@ -81,6 +87,36 @@
                         <?php the_content(); ?>
                     </div>
                 </section>
+                
+                <!-- Tags & Tips Section -->
+                <?php 
+                $post_tags = get_the_tags();
+                $tips = get_field('tips');
+                if ($post_tags || $tips): 
+                ?>
+                <section class="space-y-8">
+                    <?php if ($post_tags): ?>
+                    <div class="flex flex-wrap gap-2">
+                        <?php foreach($post_tags as $tag): ?>
+                        <span class="inline-block bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full text-sm font-bold">
+                            #<?php echo $tag->name; ?>
+                        </span>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if ($tips): ?>
+                    <div class="bg-yellow-50 dark:bg-yellow-900/20 p-6 rounded-2xl border border-yellow-100 dark:border-yellow-700/50">
+                        <h3 class="text-xl font-black text-brand-gold mb-3 flex items-center gap-2">
+                            <span>💡</span> Tips:
+                        </h3>
+                        <div class="prose dark:prose-invert text-slate-700 dark:text-slate-300 text-sm">
+                            <?php echo nl2br(esc_html($tips)); ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                </section>
+                <?php endif; ?>
 
                 <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700">

@@ -30,10 +30,16 @@ function theme_scripts() {
 			$places_query->the_post();
 			$location = get_field('ubicacion');
 			
-			// Default fallback image if none exists
+			// Image Logic: Featured > Gallery[0] > Logo
 			$image_url = get_the_post_thumbnail_url(get_the_ID(), 'medium');
+			
 			if (!$image_url) {
-				$image_url = get_template_directory_uri() . '/assets/img/logo.jpg';
+				$gallery = get_field('galeria');
+				if ($gallery && is_array($gallery) && !empty($gallery)) {
+					$image_url = $gallery[0]['url'];
+				} else {
+					$image_url = get_template_directory_uri() . '/assets/img/logo.jpg';
+				}
 			}
 
 			if ($location && isset($location['lat']) && isset($location['lng'])) {
@@ -102,7 +108,11 @@ function theme_scripts() {
 				'acf' => array(
 					'fecha' => get_field('fecha'),
 					'hora' => get_field('hora'),
-					'ubicacion' => get_field('ubicacion')
+					'ubicacion' => get_field('ubicacion'),
+                    'costo_tipo' => get_field('costo_tipo'),
+                    'costo_valor' => get_field('costo_valor'),
+                    'whatsapp' => get_field('whatsapp'),
+                    'tips' => get_field('tips')
 				)
 			);
 		}
@@ -115,7 +125,8 @@ function theme_scripts() {
 		'events' => $events_data,
         'ajax_url' => admin_url('admin-ajax.php'),
         'favorite_nonce' => wp_create_nonce('favorite_nonce'),
-        'is_logged_in' => is_user_logged_in()
+        'is_logged_in' => is_user_logged_in(),
+        'favorites' => is_user_logged_in() ? (get_user_meta(get_current_user_id(), 'user_favorites', true) ?: []) : []
 	));
 
 	// Leaflet JS
@@ -138,3 +149,9 @@ function theme_scripts() {
 }
 
 add_action("wp_enqueue_scripts", "theme_scripts", 9999);
+
+// Fix ACF WYSIWYG Blank Issue
+function kikemonk_admin_fix() {
+    wp_enqueue_script('kikemonk-admin-fix', get_template_directory_uri() . '/assets/js/admin-fix.js', ['jquery'], '1.0', true);
+}
+add_action('admin_enqueue_scripts', 'kikemonk_admin_fix');

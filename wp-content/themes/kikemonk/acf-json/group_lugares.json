@@ -11,7 +11,10 @@
                 "restaurant": "Restaurante",
                 "park": "Parque",
                 "museum": "Museo",
-                "shop": "Tienda"
+                "shop": "Tienda",
+                "bar": "Bar",
+                "cafe": "Cafetería",
+                "hotel": "Hotel"
             },
             "default_value": "restaurant",
             "return_format": "value"
@@ -35,6 +38,7 @@
             "label": "Ubicación (Mapa)",
             "name": "ubicacion",
             "type": "leaflet_map",
+            "instructions": "Selecciona la ubicación en el mapa.",
             "center_lat": "16.7371",
             "center_lng": "-92.6376",
             "zoom": 14
@@ -87,6 +91,13 @@
             "name": "galeria",
             "type": "gallery",
             "return_format": "array"
+        },
+        {
+            "key": "field_65abc12345695",
+            "label": "Tips / Recomendaciones",
+            "name": "tips",
+            "type": "textarea",
+            "instructions": "Agrega consejos útiles para los visitantes."
         }
     ],
     "location": [

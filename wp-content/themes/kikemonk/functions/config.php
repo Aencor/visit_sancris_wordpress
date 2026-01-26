@@ -15,3 +15,23 @@ function monk_mime_types($mimes) {
 	return $mimes;
 }
 add_filter("upload_mimes", "monk_mime_types");
+
+
+// --- ACF Local JSON Configuration ---
+
+/**
+ * Save ACF JSON to theme directory
+ */
+add_filter('acf/settings/save_json', function( $path ) {
+    $path = get_stylesheet_directory() . '/acf-json';
+    return $path;
+});
+
+/**
+ * Load ACF JSON from theme directory
+ */
+add_filter('acf/settings/load_json', function( $paths ) {
+    unset($paths[0]); // Remove original path
+    $paths[] = get_stylesheet_directory() . '/acf-json';
+    return $paths;
+});

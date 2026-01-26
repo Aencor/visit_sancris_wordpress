@@ -10996,6 +10996,7 @@ __webpack_require__.r(__webpack_exports__);
 // --- State ---
 var userPosition = null;
 var map = null;
+var tileLayer = null;
 var markers = [];
 var eventMarkers = [];
 var allPlaces = [];
@@ -11010,6 +11011,7 @@ var common = {
       var isDark = html.classList.toggle('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
       console.log('Theme toggled. Is dark:', isDark);
+      _this.updateMapTheme(isDark);
     };
     var applyInitialTheme = function applyInitialTheme() {
       var savedTheme = localStorage.getItem('theme') || 'light';
@@ -11194,6 +11196,45 @@ var common = {
         }
       });
     });
+    // Favorite Button Logic (Popup)
+    $(document).on('click', '.btn-favorite-popup', function (e) {
+      e.stopPropagation();
+      if (!wpData.is_logged_in) {
+        window.location.href = '/login';
+        return;
+      }
+      var btn = $(this);
+      var postId = btn.data('id');
+      $.ajax({
+        url: wpData.ajax_url,
+        method: 'POST',
+        data: {
+          action: 'toggle_favorite',
+          nonce: wpData.favorite_nonce,
+          post_id: postId
+        },
+        success: function success(res) {
+          if (res.success) {
+            if (res.data.action === 'added') {
+              btn.text('❤️').removeClass('text-slate-400 dark:text-white opacity-50').addClass('text-red-500');
+              // Update local store to reflect change immediately if re-opened
+              if (wpData.favorites) wpData.favorites.push(postId);
+            } else {
+              btn.text('🤍').addClass('text-slate-400 dark:text-white opacity-50').removeClass('text-red-500');
+              if (wpData.favorites) {
+                var idx = wpData.favorites.indexOf(postId);
+                if (idx > -1) wpData.favorites.splice(idx, 1);
+                var idxStr = wpData.favorites.indexOf(String(postId));
+                if (idxStr > -1) wpData.favorites.splice(idxStr, 1);
+              }
+            }
+          }
+        },
+        error: function error(err) {
+          console.error('Favorite request failed', err);
+        }
+      });
+    });
   },
   handleSearch: function handleSearch() {
     var query = $('#main-search').val();
@@ -11304,7 +11345,10 @@ var common = {
     map = L.map('map', {
       zoomControl: false
     }).setView([center.lat, center.lng], 14);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    var isDark = document.documentElement.classList.contains('dark');
+    var lightUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    var darkUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+    tileLayer = L.tileLayer(isDark ? darkUrl : lightUrl, {
       attribution: '&copy; CARTO'
     }).addTo(map);
 
@@ -11373,15 +11417,18 @@ var common = {
     };
     var markerMap = {};
     places.forEach(function (place) {
+      var isFav = wpData.favorites && (wpData.favorites.includes(place.id) || wpData.favorites.includes(String(place.id)));
+      var heartChar = isFav ? '❤️' : '🤍';
+      var heartClass = isFav ? 'text-red-500' : 'text-slate-400 dark:text-white';
       var marker = L.marker([place.lat, place.lng], {
         icon: getIcon(place)
-      }).addTo(map).bindPopup("\n          <div class=\"min-w-[200px]\">\n            <img src=\"".concat(place.image, "\" class=\"w-full h-32 object-cover rounded-t-lg mb-2\" alt=\"").concat(place.name, "\">\n            <h3 class=\"font-bold text-lg text-brand-blue leading-tight\">").concat(place.name, "</h3>\n            <div class=\"text-[10px] font-bold text-slate-500 uppercase mb-1\">").concat(place.label || place.category, "</div>\n            <p class=\"text-xs text-slate-600 dark:text-slate-400 line-clamp-3 mb-3\">").concat(place.description, "</p>\n            <div class=\"grid grid-cols-2 gap-2\">\n                <button class=\"bg-brand-blue text-white text-[10px] font-bold py-2 rounded-lg btn-more-info\" data-id=\"").concat(place.id, "\">Conoce m\xE1s</button>\n                <button class=\"bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-bold py-2 rounded-lg btn-directions\" data-name=\"").concat(place.name, "\">C\xF3mo llegar</button>\n            </div>\n          </div>\n        "), {
-        maxWidth: 250,
+      }).addTo(map).bindPopup("\n          <div class=\"min-w-[220px] relative\">\n            <button class=\"absolute top-2 right-2 z-10 p-1.5 bg-white/90 dark:bg-slate-800/90 rounded-full shadow-md btn-favorite-popup ".concat(heartClass, " hover:scale-110 transition-transform\" data-id=\"").concat(place.id, "\" title=\"Agregar a Favoritos\">").concat(heartChar, "</button>\n            <img src=\"").concat(place.image, "\" class=\"w-full h-32 object-cover rounded-t-lg mb-2 bg-slate-100 dark:bg-slate-700\" alt=\"").concat(place.name, "\">\n            <h3 class=\"font-bold text-lg text-brand-blue leading-tight pr-6\">").concat(place.name, "</h3>\n            <div class=\"text-[10px] font-bold text-slate-500 uppercase mb-1\">").concat(place.label || place.category, "</div>\n            <p class=\"text-xs text-slate-600 dark:text-slate-400 mb-3 max-h-32 overflow-y-auto pr-1 custom-scrollbar\">").concat(place.description, "</p>\n            <div class=\"grid grid-cols-2 gap-2\">\n                <button class=\"bg-brand-blue text-white text-[10px] font-bold py-2 rounded-lg btn-more-info\" data-id=\"").concat(place.id, "\">Conoce m\xE1s</button>\n                <button class=\"bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-bold py-2 rounded-lg btn-directions\" data-name=\"").concat(place.name, "\">C\xF3mo llegar</button>\n            </div>\n          </div>\n        "), {
+        maxWidth: 260,
         className: 'custom-popup'
       });
       markers.push(marker);
       markerMap[place.id] = marker;
-      var card = "\n        <div class=\"flex-shrink-0 w-[85vw] md:w-full bg-white dark:bg-slate-800 p-4 rounded-xl shadow-lg md:shadow-sm border border-slate-200 md:border-slate-100 dark:border-slate-700 hover:shadow-xl transition-all cursor-pointer card-item snap-center\" data-id=\"".concat(place.id, "\">\n          <div class=\"flex gap-4\">\n            <img src=\"").concat(place.image, "\" class=\"w-24 h-24 rounded-lg object-cover\">\n            <div class=\"flex-grow min-w-0\">\n               <h4 class=\"font-bold text-brand-blue dark:text-brand-gold truncate\">").concat(place.name, "</h4>\n               <p class=\"text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2\">").concat(place.description, "</p>\n               <div class=\"mt-2 flex justify-between\">\n                  <button class=\"text-brand-blue dark:text-brand-gold font-bold text-xs btn-directions\" data-name=\"").concat(place.name, "\">Llegar</button>\n                  <button class=\"text-brand-blue dark:text-brand-gold font-bold text-xs btn-more-info\" data-id=\"").concat(place.id, "\">Ver m\xE1s \u2192</button>\n               </div>\n            </div>\n          </div>\n        </div>\n      ");
+      var card = "\n        <div class=\"flex-shrink-0 w-[85vw] md:w-full bg-white dark:bg-slate-800 p-4 rounded-xl shadow-lg md:shadow-sm border border-slate-200 md:border-slate-100 dark:border-slate-700 hover:shadow-xl transition-all cursor-pointer card-item snap-center\" data-id=\"".concat(place.id, "\">\n          <div class=\"flex gap-4\">\n            <img src=\"").concat(place.image, "\" class=\"w-24 h-24 rounded-lg object-cover aspect-square flex-shrink-0\">\n            <div class=\"flex-grow min-w-0\">\n               <h4 class=\"font-bold text-brand-blue dark:text-brand-gold truncate\">").concat(place.name, "</h4>\n               <p class=\"text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2\">").concat(place.description, "</p>\n               <div class=\"mt-2 flex justify-between\">\n                  <button class=\"text-brand-blue dark:text-brand-gold font-bold text-xs btn-directions\" data-name=\"").concat(place.name, "\">Llegar</button>\n                  <button class=\"text-brand-blue dark:text-brand-gold font-bold text-xs btn-more-info\" data-id=\"").concat(place.id, "\">Ver m\xE1s \u2192</button>\n               </div>\n            </div>\n          </div>\n        </div>\n      ");
       container.append(card);
     });
     $('.card-item').on('click', function (e) {
@@ -11516,10 +11563,13 @@ var common = {
         lng = parseFloat(event.acf.ubicacion_mapa.lng);
       }
       if (lat && lng) {
+        var isFav = wpData.favorites && (wpData.favorites.includes(event.id) || wpData.favorites.includes(String(event.id)));
+        var heartChar = isFav ? '❤️' : '🤍';
+        var heartClass = isFav ? 'text-red-500' : 'text-slate-400 dark:text-white';
         var marker = L.marker([lat, lng], {
           icon: getEventIcon()
-        }).addTo(map).bindPopup("\n                      <div class=\"min-w-[200px]\">\n                          <h3 class=\"font-bold text-lg text-brand-gold leading-tight mb-2\">".concat(event.title.rendered || event.title, "</h3>\n                          <p class=\"text-xs text-slate-600 dark:text-slate-400 mb-2\">\uD83D\uDCC5 ").concat(event.acf.fecha || '', " ").concat(event.acf.hora || '', "</p>\n                          <a href=\"").concat(event.link, "\" class=\"bg-brand-gold text-white text-[10px] font-bold py-2 px-4 rounded-lg inline-block\">Ver Evento</a>\n                      </div>\n                  "), {
-          maxWidth: 250,
+        }).addTo(map).bindPopup("\n                      <div class=\"min-w-[220px] relative\">\n                          <button class=\"absolute top-2 right-2 z-10 p-1.5 bg-white/90 dark:bg-slate-800/90 rounded-full shadow-md btn-favorite-popup ".concat(heartClass, " hover:scale-110 transition-transform\" data-id=\"").concat(event.id, "\" title=\"Agregar a Favoritos\">").concat(heartChar, "</button>\n                          <h3 class=\"font-bold text-lg text-brand-gold leading-tight mb-2 pr-6\">").concat(event.title.rendered || event.title, "</h3>\n                          <p class=\"text-xs text-slate-600 dark:text-slate-400 mb-2\">\uD83D\uDCC5 ").concat(event.acf.fecha || '', " ").concat(event.acf.hora || '', "</p>\n                          <p class=\"text-[10px] font-bold mb-2 ").concat(event.acf.costo_tipo === 'paid' ? 'text-brand-blue dark:text-brand-gold' : 'text-green-500', "\">\n                              ").concat(event.acf.costo_tipo === 'paid' ? '🎟️ ' + (event.acf.costo_valor || 'Con Costo') : '🎟️ Entrada Libre', "\n                          </p>\n                          <p class=\"text-[10px] text-slate-500 mb-3 max-h-24 overflow-y-auto custom-scrollbar\">").concat(event.acf.ubicacion || '', "</p>\n                          <a href=\"").concat(event.link, "\" class=\"bg-brand-gold text-white text-[10px] font-bold py-2 px-4 rounded-lg inline-block\">Ver Evento</a>\n                      </div>\n                  "), {
+          maxWidth: 260,
           className: 'custom-popup'
         });
         eventMarkers.push(marker);
@@ -11531,6 +11581,11 @@ var common = {
       return map.removeLayer(marker);
     });
     eventMarkers = [];
+  },
+  updateMapTheme: function updateMapTheme(isDark) {
+    if (!tileLayer) return;
+    var url = isDark ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    tileLayer.setUrl(url);
   },
   finalize: function finalize() {}
 };

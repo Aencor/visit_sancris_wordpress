@@ -6,65 +6,79 @@
     $fecha = get_field('fecha') ?: 'Fecha por confirmar';
     $hora = get_field('hora') ?: '';
     $ubicacion_texto = get_field('ubicacion') ?: 'Ubicación por confirmar';
-    // We could add more explicit location fields like 'coordenadas' later if needed
     
     // Formatting date
     $date_obj = date_create($fecha);
     $date_day = $date_obj ? date_format($date_obj, 'd') : '';
     $date_month = $date_obj ? date_i18n('M', strtotime($fecha)) : '';
+
+    // New Fields
+    $costo_tipo = get_field('costo_tipo'); // free/paid
+    $costo_valor = get_field('costo_valor'); 
+    $whatsapp = get_field('whatsapp');
+    $tips = get_field('tips');
+    $gallery = get_field('galeria');
+
+    // Image Logic: Featured > Gallery[0] > Logo
+    $hero_image = get_template_directory_uri() . '/assets/img/logo.jpg';
+    if (has_post_thumbnail()) {
+        $hero_image = get_the_post_thumbnail_url(get_the_ID(), 'full');
+    } elseif ($gallery && is_array($gallery) && !empty($gallery)) {
+        $hero_image = $gallery[0]['url'];
+    }
 ?>
 
 <main class="bg-white dark:bg-slate-900 transition-colors duration-300">
     <!-- Hero Section -->
     <div class="relative h-[60vh] min-h-[500px] w-full overflow-hidden flex items-end">
-        <?php if (has_post_thumbnail()) : ?>
-            <?php the_post_thumbnail('full', ['class' => 'absolute inset-0 w-full h-full object-cover']); ?>
-        <?php else : ?>
-            <img src="https://loremflickr.com/1200/800/party,concert" class="absolute inset-0 w-full h-full object-cover" alt="<?php the_title(); ?>">
-        <?php endif; ?>
+        <img src="<?php echo esc_url($hero_image); ?>" class="absolute inset-0 w-full h-full object-cover" alt="<?php the_title(); ?>">
         
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
         
-        <div class="container mx-auto p-6 md:p-12 relative z-10">
-            <div class="flex flex-col md:flex-row gap-6 md:items-end">
-                <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-center min-w-[100px] shadow-2xl">
-                    <span class="block text-xl font-medium text-brand-gold uppercase tracking-wider"><?php echo $date_month; ?></span>
-                    <span class="block text-5xl font-black text-white"><?php echo $date_day; ?></span>
-                </div>
-                
-                <div class="flex-grow">
-                    <span class="inline-block px-3 py-1 rounded-full bg-brand-blue text-white text-xs font-bold uppercase tracking-widest mb-4 shadow-lg border border-white/10">
-                        Evento
-                    </span>
-                    <div class="flex items-center justify-between gap-4">
-                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-4 leading-tight">
-                            <?php the_title(); ?>
-                        </h1>
-                        <?php 
-                        $is_fav = false;
-                        if (is_user_logged_in()) {
-                            $favs = get_user_meta(get_current_user_id(), 'user_favorites', true);
-                            if (is_array($favs) && in_array(get_the_ID(), $favs)) {
-                                $is_fav = true;
-                            }
-                        }
-                        ?>
-                        <button id="btn-favorite" data-id="<?php the_ID(); ?>" class="text-4xl md:text-5xl transition-transform hover:scale-110 focus:outline-none group relative <?php echo $is_fav ? 'text-red-500' : 'text-white opacity-50 hover:opacity-100'; ?>">
-                            <?php echo $is_fav ? '❤️' : '🤍'; ?>
-                            <div class="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-slate-900/90 backdrop-blur-sm text-white text-[10px] font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap z-50 shadow-xl">
-                                <?php echo $is_fav ? 'Quitar de favoritos' : 'Añadir a favoritos'; ?>
-                                <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900/90 rotate-45"></div>
-                            </div>
-                        </button>
+        <div class="absolute bottom-0 left-0 w-full p-8 md:p-16">
+            <div class="container mx-auto relative z-10">
+                <div class="flex flex-col md:flex-row gap-6 md:items-end">
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-center min-w-[100px] shadow-2xl hidden md:block">
+                        <span class="block text-xl font-medium text-brand-gold uppercase tracking-wider"><?php echo $date_month; ?></span>
+                        <span class="block text-5xl font-black text-white"><?php echo $date_day; ?></span>
                     </div>
-                    <div class="flex flex-wrap gap-6 text-white/90 font-medium text-lg">
-                        <?php if ($hora): ?>
+                    
+                    <div class="flex-grow">
+                        <span class="inline-block px-3 py-1 rounded-full bg-brand-gold text-white text-xs font-bold uppercase tracking-widest mb-4 shadow-lg">
+                            Evento
+                        </span>
+                        <div class="flex items-center justify-between">
+                            <h1 class="text-4xl md:text-6xl font-black text-white mb-4 uppercase tracking-tighter">
+                                <?php the_title(); ?>
+                            </h1>
+                            <?php 
+                            $is_fav = false;
+                            if (is_user_logged_in()) {
+                                $favs = get_user_meta(get_current_user_id(), 'user_favorites', true);
+                                if (is_array($favs) && in_array(get_the_ID(), $favs)) {
+                                    $is_fav = true;
+                                }
+                            }
+                            ?>
+                            <button id="btn-favorite" data-id="<?php the_ID(); ?>" class="text-4xl md:text-5xl transition-transform hover:scale-110 focus:outline-none group relative <?php echo $is_fav ? 'text-red-500' : 'text-white opacity-50 hover:opacity-100'; ?>">
+                                <?php echo $is_fav ? '❤️' : '🤍'; ?>
+                                <div class="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-slate-900/90 backdrop-blur-sm text-white text-[10px] font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap z-50 shadow-xl">
+                                    <?php echo $is_fav ? 'Quitar de favoritos' : 'Añadir a favoritos'; ?>
+                                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900/90 rotate-45"></div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-6 text-white/90">
+                            <?php if ($hora): ?>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-brand-gold text-xl">🕒</span> 
+                                    <span class="font-bold text-lg"><?php echo $hora; ?></span>
+                                </div>
+                            <?php endif; ?>
                             <div class="flex items-center gap-2">
-                                <span class="text-brand-gold">🕒</span> <?php echo $hora; ?>
+                                <span class="text-brand-gold text-xl">📍</span>
+                                <span class="font-bold text-lg"><?php echo $ubicacion_texto; ?></span>
                             </div>
-                        <?php endif; ?>
-                        <div class="flex items-center gap-2">
-                            <span class="text-brand-gold">📍</span> <?php echo $ubicacion_texto; ?>
                         </div>
                     </div>
                 </div>
@@ -78,18 +92,60 @@
             <!-- Main Info -->
             <div class="lg:col-span-2 space-y-12">
                 <section>
-                    <h2 class="text-2xl font-black text-brand-blue dark:text-brand-gold uppercase tracking-tight mb-6">Detalles del Evento</h2>
+                    <h2 class="text-2xl font-black text-brand-blue dark:text-brand-gold uppercase tracking-tight mb-6 mt-4">Detalles del Evento</h2>
                     <div class="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
                         <?php 
                         if ($desc_larga = get_field('descripcion_larga')) {
                             echo $desc_larga; 
                         } else {
-                            // Fallback to standard content if custom field is empty
                             the_content(); 
                         }
                         ?>
                     </div>
                 </section>
+                
+                <!-- Tags & Tips Section -->
+                <?php 
+                $post_tags = get_the_tags();
+                if ($post_tags || $tips): 
+                ?>
+                <section class="space-y-8">
+                    <?php if ($post_tags): ?>
+                    <div class="flex flex-wrap gap-2">
+                        <?php foreach($post_tags as $tag): ?>
+                        <span class="inline-block bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full text-sm font-bold">
+                            #<?php echo $tag->name; ?>
+                        </span>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if ($tips): ?>
+                    <div class="bg-yellow-50 dark:bg-yellow-900/20 p-6 rounded-2xl border border-yellow-100 dark:border-yellow-700/50">
+                        <h3 class="text-xl font-black text-brand-gold mb-3 flex items-center gap-2">
+                            <span>💡</span> Tips:
+                        </h3>
+                        <div class="prose dark:prose-invert text-slate-700 dark:text-slate-300 text-sm">
+                            <?php echo nl2br(esc_html($tips)); ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                </section>
+                <?php endif; ?>
+
+                <!-- Gallery -->
+                <?php if ($gallery): ?>
+                <section>
+                    <h2 class="text-2xl font-black text-brand-blue dark:text-brand-gold uppercase tracking-tight mb-6">Galería</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <?php foreach ($gallery as $img) : ?>
+                            <div class="aspect-square rounded-xl overflow-hidden shadow-lg hover:scale-105 transition-transform duration-500">
+                                <img src="<?php echo $img['url']; ?>" class="w-full h-full object-cover">
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </section>
+                <?php endif; ?>
                 
                 <!-- Share -->
                 <section class="border-t border-slate-100 dark:border-slate-800 pt-8">
@@ -134,10 +190,30 @@
                                class="w-full bg-brand-gold hover:bg-amber-600 text-white font-bold py-4 px-2 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
                                 <span>📅</span> Agregar a Calendario
                             </a>
+
+                            <?php if ($whatsapp): 
+                                $wa_link = "https://wa.me/" . esc_attr($whatsapp) . "?text=" . urlencode("Hola, quiero reservar para el evento: " . get_the_title());
+                            ?>
+                            <a href="<?php echo $wa_link; ?>" target="_blank" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-2 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                                <span>💬</span> Reservar por WhatsApp
+                            </a>
+                            <?php endif; ?>
                         </div>
                     </div>
+                    
+                    <!-- Cost Info -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-xl">
+                        <h3 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2"><span>🎟️</span> Entrada</h3>
+                        <?php if ($costo_tipo === 'paid'): ?>
+                            <div class="text-2xl font-black text-brand-blue dark:text-brand-gold"><?php echo esc_html($costo_valor); ?></div>
+                            <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Con Costo</span>
+                        <?php else: ?>
+                            <div class="text-2xl font-black text-green-500">GRATIS</div>
+                            <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Entrada Libre</span>
+                        <?php endif; ?>
+                    </div>
 
-                    <!-- Related Events (Mock or Real) -->
+                    <!-- Related Events -->
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-xl">
                         <h3 class="font-bold text-slate-800 dark:text-white mb-4">Otros Eventos</h3>
                         <?php 
@@ -145,7 +221,7 @@
                             'post_type' => 'eventos',
                             'posts_per_page' => 3,
                             'post__not_in' => array(get_the_ID()),
-                            'orderby' => 'rand' // simple recommendation
+                            'orderby' => 'rand'
                         ));
                         
                         if ($related->have_posts()):

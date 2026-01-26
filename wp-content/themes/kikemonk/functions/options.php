@@ -11,12 +11,6 @@ if (function_exists("acf_add_options_page")) {
 	]);
 
 	acf_add_options_sub_page([
-		"page_title" => "Menu Options",
-		"menu_title" => "Menu Options",
-		"parent_slug" => "theme-general-options"
-	]);
-
-	acf_add_options_sub_page([
 		"page_title" => "Global Settings",
 		"menu_title" => "Global Settings",
 		"parent_slug" => "theme-general-options"
@@ -25,12 +19,6 @@ if (function_exists("acf_add_options_page")) {
 	acf_add_options_sub_page([
 		"page_title" => "External Scripts",
 		"menu_title" => "External Scripts",
-		"parent_slug" => "theme-general-options"
-	]);
-
-	acf_add_options_sub_page([
-		"page_title" => "404 Page",
-		"menu_title" => "404 Page",
 		"parent_slug" => "theme-general-options"
 	]);
 }

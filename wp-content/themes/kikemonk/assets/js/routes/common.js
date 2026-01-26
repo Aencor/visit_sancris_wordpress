@@ -9,6 +9,7 @@ import SideBySide from '../side-by-side';
 // --- State ---
 let userPosition = null;
 let map = null;
+let tileLayer = null;
 let markers = [];
 let eventMarkers = [];
 let allPlaces = [];
@@ -22,6 +23,7 @@ const common = {
       const isDark = html.classList.toggle('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
       console.log('Theme toggled. Is dark:', isDark);
+      this.updateMapTheme(isDark);
     };
 
     const applyInitialTheme = () => {
@@ -195,6 +197,47 @@ const common = {
         }
       });
     });
+    // Favorite Button Logic (Popup)
+    $(document).on('click', '.btn-favorite-popup', function (e) {
+      e.stopPropagation();
+      if (!wpData.is_logged_in) {
+        window.location.href = '/login';
+        return;
+      }
+
+      const btn = $(this);
+      const postId = btn.data('id');
+
+      $.ajax({
+        url: wpData.ajax_url,
+        method: 'POST',
+        data: {
+          action: 'toggle_favorite',
+          nonce: wpData.favorite_nonce,
+          post_id: postId
+        },
+        success: (res) => {
+          if (res.success) {
+            if (res.data.action === 'added') {
+              btn.text('❤️').removeClass('text-slate-400 dark:text-white opacity-50').addClass('text-red-500');
+              // Update local store to reflect change immediately if re-opened
+              if (wpData.favorites) wpData.favorites.push(postId);
+            } else {
+              btn.text('🤍').addClass('text-slate-400 dark:text-white opacity-50').removeClass('text-red-500');
+              if (wpData.favorites) {
+                const idx = wpData.favorites.indexOf(postId);
+                if (idx > -1) wpData.favorites.splice(idx, 1);
+                const idxStr = wpData.favorites.indexOf(String(postId));
+                if (idxStr > -1) wpData.favorites.splice(idxStr, 1);
+              }
+            }
+          }
+        },
+        error: (err) => {
+          console.error('Favorite request failed', err);
+        }
+      });
+    });
   },
 
   handleSearch() {
@@ -299,7 +342,11 @@ const common = {
     // Initialize map with zoomControl false as we have custom controls
     map = L.map('map', { zoomControl: false }).setView([center.lat, center.lng], 14);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    const isDark = document.documentElement.classList.contains('dark');
+    const lightUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    const darkUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+
+    tileLayer = L.tileLayer(isDark ? darkUrl : lightUrl, {
       attribution: '&copy; CARTO'
     }).addTo(map);
 
@@ -349,20 +396,25 @@ const common = {
 
     const markerMap = {};
     places.forEach(place => {
+      const isFav = wpData.favorites && (wpData.favorites.includes(place.id) || wpData.favorites.includes(String(place.id)));
+      const heartChar = isFav ? '❤️' : '🤍';
+      const heartClass = isFav ? 'text-red-500' : 'text-slate-400 dark:text-white';
+
       const marker = L.marker([place.lat, place.lng], { icon: getIcon(place) })
         .addTo(map)
         .bindPopup(`
-          <div class="min-w-[200px]">
-            <img src="${place.image}" class="w-full h-32 object-cover rounded-t-lg mb-2" alt="${place.name}">
-            <h3 class="font-bold text-lg text-brand-blue leading-tight">${place.name}</h3>
+          <div class="min-w-[220px] relative">
+            <button class="absolute top-2 right-2 z-10 p-1.5 bg-white/90 dark:bg-slate-800/90 rounded-full shadow-md btn-favorite-popup ${heartClass} hover:scale-110 transition-transform" data-id="${place.id}" title="Agregar a Favoritos">${heartChar}</button>
+            <img src="${place.image}" class="w-full h-32 object-cover rounded-t-lg mb-2 bg-slate-100 dark:bg-slate-700" alt="${place.name}">
+            <h3 class="font-bold text-lg text-brand-blue leading-tight pr-6">${place.name}</h3>
             <div class="text-[10px] font-bold text-slate-500 uppercase mb-1">${place.label || place.category}</div>
-            <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 mb-3">${place.description}</p>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mb-3 max-h-32 overflow-y-auto pr-1 custom-scrollbar">${place.description}</p>
             <div class="grid grid-cols-2 gap-2">
                 <button class="bg-brand-blue text-white text-[10px] font-bold py-2 rounded-lg btn-more-info" data-id="${place.id}">Conoce más</button>
                 <button class="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-bold py-2 rounded-lg btn-directions" data-name="${place.name}">Cómo llegar</button>
             </div>
           </div>
-        `, { maxWidth: 250, className: 'custom-popup' });
+        `, { maxWidth: 260, className: 'custom-popup' });
 
       markers.push(marker);
       markerMap[place.id] = marker;
@@ -370,7 +422,7 @@ const common = {
       const card = `
         <div class="flex-shrink-0 w-[85vw] md:w-full bg-white dark:bg-slate-800 p-4 rounded-xl shadow-lg md:shadow-sm border border-slate-200 md:border-slate-100 dark:border-slate-700 hover:shadow-xl transition-all cursor-pointer card-item snap-center" data-id="${place.id}">
           <div class="flex gap-4">
-            <img src="${place.image}" class="w-24 h-24 rounded-lg object-cover">
+            <img src="${place.image}" class="w-24 h-24 rounded-lg object-cover aspect-square flex-shrink-0">
             <div class="flex-grow min-w-0">
                <h4 class="font-bold text-brand-blue dark:text-brand-gold truncate">${place.name}</h4>
                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2">${place.description}</p>
@@ -520,15 +572,24 @@ const common = {
       }
 
       if (lat && lng) {
+        const isFav = wpData.favorites && (wpData.favorites.includes(event.id) || wpData.favorites.includes(String(event.id)));
+        const heartChar = isFav ? '❤️' : '🤍';
+        const heartClass = isFav ? 'text-red-500' : 'text-slate-400 dark:text-white';
+
         const marker = L.marker([lat, lng], { icon: getEventIcon() })
           .addTo(map)
           .bindPopup(`
-                      <div class="min-w-[200px]">
-                          <h3 class="font-bold text-lg text-brand-gold leading-tight mb-2">${event.title.rendered || event.title}</h3>
+                      <div class="min-w-[220px] relative">
+                          <button class="absolute top-2 right-2 z-10 p-1.5 bg-white/90 dark:bg-slate-800/90 rounded-full shadow-md btn-favorite-popup ${heartClass} hover:scale-110 transition-transform" data-id="${event.id}" title="Agregar a Favoritos">${heartChar}</button>
+                          <h3 class="font-bold text-lg text-brand-gold leading-tight mb-2 pr-6">${event.title.rendered || event.title}</h3>
                           <p class="text-xs text-slate-600 dark:text-slate-400 mb-2">📅 ${event.acf.fecha || ''} ${event.acf.hora || ''}</p>
+                          <p class="text-[10px] font-bold mb-2 ${event.acf.costo_tipo === 'paid' ? 'text-brand-blue dark:text-brand-gold' : 'text-green-500'}">
+                              ${event.acf.costo_tipo === 'paid' ? '🎟️ ' + (event.acf.costo_valor || 'Con Costo') : '🎟️ Entrada Libre'}
+                          </p>
+                          <p class="text-[10px] text-slate-500 mb-3 max-h-24 overflow-y-auto custom-scrollbar">${event.acf.ubicacion || ''}</p>
                           <a href="${event.link}" class="bg-brand-gold text-white text-[10px] font-bold py-2 px-4 rounded-lg inline-block">Ver Evento</a>
                       </div>
-                  `, { maxWidth: 250, className: 'custom-popup' });
+                  `, { maxWidth: 260, className: 'custom-popup' });
 
         eventMarkers.push(marker);
       }
@@ -539,6 +600,16 @@ const common = {
     eventMarkers.forEach(marker => map.removeLayer(marker));
     eventMarkers = [];
   },
+
+  updateMapTheme(isDark) {
+    if (!tileLayer) return;
+    const url = isDark
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    tileLayer.setUrl(url);
+  },
+
+
 
   finalize() { }
 };

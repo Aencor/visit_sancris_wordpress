@@ -4,7 +4,7 @@
  */
 
 $places_query = new WP_Query([
-    'post_type' => 'lugares',
+    'post_type' => ['lugares', 'eventos'],
     'posts_per_page' => -1,
 ]);
 
@@ -12,16 +12,42 @@ $places_data = [];
 if ($places_query->have_posts()) {
     while ($places_query->have_posts()) {
         $places_query->the_post();
-        // Assuming ACF fields: lat, lng, image, category
+        $id = get_the_ID();
+        $type = get_post_type();
+        
+        // Image logic
+        $image = get_the_post_thumbnail_url($id, 'medium') ?: 'https://loremflickr.com/320/240/san-cristobal';
+        
+        // Location logic
+        $lat = 0; $lng = 0;
+        if ($type === 'lugares') {
+            $loc = get_field('ubicacion');
+            $lat = $loc['lat'] ?? 16.7371;
+            $lng = $loc['lng'] ?? -92.6376;
+            $cat = get_field('categoria') ?: 'lugar';
+        } else {
+            // Eventos uses 'ubicacion_mapa'
+            $loc = get_field('ubicacion_mapa');
+            if (!$loc && $type === 'eventos') {
+                 // Fallback if defined differently or using text field? 
+                 // Assuming ubicacion_mapa is the one.
+                 // If not set, maybe use default
+            }
+            $lat = $loc['lat'] ?? 16.7371;
+            $lng = $loc['lng'] ?? -92.6376;
+            $cat = 'evento';
+        }
+
         $places_data[] = [
-            'id' => get_the_ID(),
+            'id' => $id,
             'name' => get_the_title(),
             'description' => get_the_excerpt(),
-            'image' => get_the_post_thumbnail_url(get_the_ID(), 'medium') ?: 'https://loremflickr.com/320/240/san-cristobal',
-            'category' => 'museum', // Placeholder for actual taxonomy
-            'lat' => (float) get_field('lat') ?: 16.7371,
-            'lng' => (float) get_field('lng') ?: -92.6376,
+            'image' => $image,
+            'category' => $cat,
+            'lat' => (float) $lat,
+            'lng' => (float) $lng,
             'url' => get_permalink(),
+            'type' => $type
         ];
     }
     wp_reset_postdata();
