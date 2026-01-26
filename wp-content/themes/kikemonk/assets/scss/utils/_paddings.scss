@@ -1,0 +1,32 @@
+$sizes: (
+  "none": 0, 
+  "default": 60px, 
+  "xsmall": 30px, 
+  "small": 50px,
+  "medium": 75px,
+  "large": 100px,
+  "xlarge": 150px,
+  "xxlarge": 200px,
+  "xxxlarge": 350px,
+  "4xlarge": 550px
+);
+
+@each $property, $value in $sizes {
+  .pt-#{$property} {
+    padding-top: $value !important;
+  }
+}
+
+@each $property, $value in $sizes {
+  .pb-#{$property} {
+    padding-bottom: $value !important;
+  }
+}
+
+
+
+
+
+
+
+

@@ -1,0 +1,110 @@
+#styleguide {
+  .dark-bg{
+    padding: 30px !important;
+  }
+	#style-head {
+		display: none;
+		.logotipo {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+	}
+	#style-hero {
+		background-color: #f5f5f5;
+		padding: 150px 0 150px 0;
+		margin-bottom: 0px;
+		.titles {
+			position: relative;
+			color: $black;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+			&:before {
+				content: " ";
+				position: absolute;
+				width: 80px;
+				height: 6px;
+				background-color: $body3;
+				top: 0;
+				left: 50%;
+				transform: translateX(-50%);
+			}
+			h1,
+			h4 {
+				color: $black;
+			}
+			h4 {
+				margin-top: 47px;
+				font-weight: 300;
+			}
+		}
+	}
+	.section-title {
+		padding: 32px 0;
+		border-bottom: 3px solid $body3;
+		margin-bottom: 37px;
+		width: 100%;
+		margin-top: 60px;
+	}
+
+	.color-module {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 29px 40px;
+	}
+
+	.typo-module {
+		margin-bottom: 28px;
+	}
+
+	.list-module {
+		display: block;
+		width: 100%;
+		h6 {
+			margin-bottom: 28px;
+		}
+		li {
+			margin-bottom: 20px;
+		}
+	}
+
+	.blockquote-module {
+		margin: 90px 0;
+		h6 {
+			margin: 45px 0;
+		}
+	}
+	.light-bg {
+		padding: 0 0 100px 0;
+		display: block;
+	}
+	.dark-bg {
+		display: block;
+		background-color: $primaryColor;
+		padding: 85px 0 100px 0;
+	}
+	.buttons-module {
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 20px;
+		div {
+			margin-bottom: 20px;
+		}
+	}
+}
+
+.dark {
+	background-color: $black;
+	h5 {
+		color: $white;
+	}
+}
+
+.list-block {
+	padding: 20px;
+}

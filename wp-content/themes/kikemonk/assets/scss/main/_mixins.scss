@@ -1,0 +1,59 @@
+//
+// Mixin
+//
+
+@mixin clearfix() {
+	clear: both;
+	zoom: 1;
+	&:before,
+	&:after {
+		content: "";
+		display: table;
+	}
+	&:after {
+		clear: both;
+	}
+}
+
+@mixin make-lead {
+	font-size: 16px !important;
+	line-height: 22px;
+
+	@include media(tablet) {
+		font-size: 20px !important;
+		line-height: 30px;
+	}
+	@include media(desktop) {
+		font-size: 22px !important;
+		line-height: 150%;
+	}
+}
+
+@mixin make-small {
+	font-size: 12px !important;
+	font-weight: $weight-light !important;
+	line-height: 18px;
+}
+
+@mixin transition($transition: 0.3s ease-out) {
+	$prefixes: ("-webkit", "-ms", "-o");
+	@each $prefix in $prefixes {
+		#{$prefix}-transition: $transition;
+	}
+
+	transition: $transition;
+}
+
+@mixin make-inverse() {
+	p,
+	li,
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	blockquote {
+		color: $white;
+	}
+}

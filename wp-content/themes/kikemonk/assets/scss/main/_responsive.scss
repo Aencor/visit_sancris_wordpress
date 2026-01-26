@@ -1,0 +1,33 @@
+
+// Responsive widths.
+
+$mobile_small_width: 480px;
+$mobile_width: 768px;
+$tablet_width: 1024px;
+$laptop_width: 1280px;
+
+@mixin media( $res ) {
+	@if desktop == $res {
+		@media (min-width: $laptop_width) {
+			@content;
+		}
+	}
+
+	@if tablet == $res {
+		@media (min-width: $tablet_width) {
+			@content;
+		}
+	}
+
+	@if mobile == $res {
+		@media (min-width: $mobile_width) {
+			@content;
+		}
+	}
+
+	@if mobile_down == $res {
+		@media (min-width: $mobile_small_width) {
+			@content;
+		}
+	}
+}

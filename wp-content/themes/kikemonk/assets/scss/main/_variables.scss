@@ -1,0 +1,35 @@
+// Colors 
+$white           : #FFF;
+$black           : #071E3C;
+$primaryColor    : #4050c6;
+$secondaryColor  : #00bfa5;
+$tertiaryColor   : #52b1ff;
+$gray            : #999;
+
+$brand-primary           : #1e3a8a; // Primary Brand Color
+$brand-primary-darken    : darken($brand-primary, 5%);
+$brand-primary-lighten   : lighten($brand-primary, 5%);
+$brand-secondary         : #d97706; // Secondary Brand Color
+$brand-secondary-darken  : darken($brand-secondary, 5%);
+$brand-secondary-lighten : lighten($brand-secondary, 5%);
+$brand-tertiary          : #52b1ff; // Tertiary Brand Color
+$brand-tertiary-darken   : darken($brand-tertiary, 5%);
+$brand-tertiary-lighten  : lighten($brand-tertiary, 5%);
+
+$body-color   : $black;
+$border-color : $primaryColor;
+$body1        : $black;
+$body2        : $secondaryColor;
+$body3        : $tertiaryColor;
+
+// Typography
+$font-family-body     : "Inter", sans-serif;
+$font-family-headline : "Inter", sans-serif;
+
+// Font Weights
+$weight-black    : 900;
+$weight-bold     : 700;
+$weight-semibold : 500;
+$weight-normal   : 400;
+$weight-light    : 300;
+$weight-lightest : 200;

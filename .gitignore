@@ -1,0 +1,12 @@
+
+wp-content/index.php
+wp-content/uploads/
+wp-content/plugins/
+wp-content/plugins/hello.php
+wp-content/plugins/index.php
+wp-content/themes/index.php
+wp-content/themes/twentytwentyfour/
+wp-content/themes/twentytwentythree/
+wp-content/themes/twentytwentytwo/
+node_modules
+*.map
