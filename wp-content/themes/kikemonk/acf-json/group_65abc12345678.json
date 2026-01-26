@@ -1,13 +1,13 @@
 {
-    "key": "group_65abc12345690",
-    "title": "Datos del Evento",
+    "key": "group_65abc12345678",
+    "title": "Datos del Lugar",
     "fields": [
         {
-            "key": "field_65abc12345691",
-            "label": "Fecha",
-            "name": "fecha",
+            "key": "field_65abc12345679",
+            "label": "Categoría",
+            "name": "categoria",
             "aria-label": "",
-            "type": "date_picker",
+            "type": "select",
             "instructions": "",
             "required": false,
             "conditional_logic": false,
@@ -16,30 +16,22 @@
                 "class": "",
                 "id": ""
             },
-            "display_format": "d\/m\/Y",
-            "return_format": "Ymd"
-        },
-        {
-            "key": "field_65abc12345692",
-            "label": "Hora",
-            "name": "hora",
-            "aria-label": "",
-            "type": "time_picker",
-            "instructions": "",
-            "required": false,
-            "conditional_logic": false,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
+            "choices": {
+                "restaurant": "Restaurante",
+                "park": "Parque",
+                "museum": "Museo",
+                "shop": "Tienda",
+                "bar": "Bar",
+                "cafe": "Cafetería",
+                "hotel": "Hotel"
             },
-            "display_format": "H:i",
-            "return_format": "H:i"
+            "default_value": "restaurant",
+            "return_format": "value"
         },
         {
-            "key": "field_65abc12345693",
-            "label": "Ubicación (Texto)",
-            "name": "ubicacion",
+            "key": "field_65abc12345680",
+            "label": "Puntuación",
+            "name": "puntuacion",
             "aria-label": "",
             "type": "text",
             "instructions": "",
@@ -49,15 +41,32 @@
                 "width": "",
                 "class": "",
                 "id": ""
-            }
+            },
+            "default_value": "4.8"
         },
         {
-            "key": "field_65abc12345699_map",
+            "key": "field_65abc12345681",
+            "label": "Horario",
+            "name": "horario",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "Abierto 09:00 - 21:00"
+        },
+        {
+            "key": "field_65abc12345682",
             "label": "Ubicación (Mapa)",
-            "name": "ubicacion_mapa",
+            "name": "ubicacion",
             "aria-label": "",
             "type": "leaflet_map",
-            "instructions": "",
+            "instructions": "Selecciona la ubicación en el mapa.",
             "required": false,
             "conditional_logic": false,
             "wrapper": {
@@ -70,72 +79,12 @@
             "zoom": 14
         },
         {
-            "key": "field_65abc12345694",
-            "label": "Descripción corta",
-            "name": "descripcion_corta",
-            "aria-label": "",
-            "type": "textarea",
-            "instructions": "",
-            "required": false,
-            "conditional_logic": false,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "rows": 2
-        },
-        {
-            "key": "field_evt_cost_type",
-            "label": "Costo",
-            "name": "costo_tipo",
-            "aria-label": "",
-            "type": "radio",
-            "instructions": "",
-            "required": false,
-            "conditional_logic": false,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "choices": {
-                "free": "Gratis \/ Entrada Libre",
-                "paid": "Con Costo"
-            },
-            "default_value": "free",
-            "layout": "horizontal"
-        },
-        {
-            "key": "field_evt_cost_val",
-            "label": "Detalle del Costo",
-            "name": "costo_valor",
-            "aria-label": "",
-            "type": "text",
-            "instructions": "Ej: $50 MXN (Solo si seleccionaste Con Costo)",
-            "required": false,
-            "conditional_logic": [
-                [
-                    {
-                        "field": "field_evt_cost_type",
-                        "operator": "==",
-                        "value": "paid"
-                    }
-                ]
-            ],
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            }
-        },
-        {
-            "key": "field_evt_whatsapp",
-            "label": "WhatsApp para Reservas",
+            "key": "field_65abc12345686",
+            "label": "WhatsApp",
             "name": "whatsapp",
             "aria-label": "",
             "type": "text",
-            "instructions": "Número con lada para reservar.",
+            "instructions": "Número con lada (ej: 529671234567)",
             "required": false,
             "conditional_logic": false,
             "wrapper": {
@@ -145,7 +94,84 @@
             }
         },
         {
-            "key": "field_evt_gallery",
+            "key": "field_65abc12345687",
+            "label": "Email de contacto",
+            "name": "email",
+            "aria-label": "",
+            "type": "email",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            }
+        },
+        {
+            "key": "field_65abc12345688",
+            "label": "Teléfono",
+            "name": "telefono",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            }
+        },
+        {
+            "key": "field_65abc12345690",
+            "label": "Descripción Personalizada",
+            "name": "descripcion_personalizada",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Descripción adicional que aparece debajo del título. Dejar vacío para usar el extracto automático.",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            }
+        },
+        {
+            "key": "field_65abc12345691",
+            "label": "Mensaje WhatsApp",
+            "name": "mensaje_whatsapp",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Mensaje predeterminado al abrir WhatsApp.",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "Hola, vi su lugar en Visita San Cris y quisiera más información."
+        },
+        {
+            "key": "field_65abc12345692",
+            "label": "Mensaje Email",
+            "name": "mensaje_email",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Asunto\/Cuerpo predeterminado al abrir el correo.",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "Hola, solicito información sobre sus servicios."
+        },
+        {
+            "key": "field_65abc12345685",
             "label": "Galería",
             "name": "galeria",
             "aria-label": "",
@@ -161,12 +187,12 @@
             "return_format": "array"
         },
         {
-            "key": "field_evt_tips",
+            "key": "field_65abc12345695",
             "label": "Tips \/ Recomendaciones",
             "name": "tips",
             "aria-label": "",
             "type": "textarea",
-            "instructions": "",
+            "instructions": "Agrega consejos útiles para los visitantes.",
             "required": false,
             "conditional_logic": false,
             "wrapper": {
@@ -174,39 +200,6 @@
                 "class": "",
                 "id": ""
             }
-        },
-        {
-            "key": "field_65abc12345695",
-            "label": "Link o CTA",
-            "name": "link_cta",
-            "aria-label": "",
-            "type": "url",
-            "instructions": "",
-            "required": false,
-            "conditional_logic": false,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            }
-        },
-        {
-            "key": "field_65abc12345696",
-            "label": "Descripción Larga",
-            "name": "descripcion_larga",
-            "aria-label": "",
-            "type": "wysiwyg",
-            "instructions": "Información detallada del evento para la página individual.",
-            "required": false,
-            "conditional_logic": false,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "tabs": "all",
-            "toolbar": "full",
-            "media_upload": 1
         }
     ],
     "location": [
@@ -214,7 +207,7 @@
             {
                 "param": "post_type",
                 "operator": "==",
-                "value": "eventos"
+                "value": "lugares"
             }
         ]
     ],

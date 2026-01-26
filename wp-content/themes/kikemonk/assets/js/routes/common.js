@@ -273,9 +273,9 @@ const common = {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        // Store user position but center map on San Cristóbal
+        // Store user position and center map on it
         userPosition = { lat: position.coords.latitude, lng: position.coords.longitude };
-        this.renderMap(sanCristobalCenter);
+        this.renderMap(userPosition);
         this.fetchWordPressPlaces();
       },
       () => {

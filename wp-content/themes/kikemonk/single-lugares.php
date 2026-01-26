@@ -147,9 +147,9 @@
                     <h2 class="text-2xl font-black text-brand-blue dark:text-brand-gold uppercase tracking-tight mb-6">Galería</h2>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                         <?php if ($gallery) : foreach ($gallery as $img) : ?>
-                            <div class="aspect-square rounded-xl overflow-hidden shadow-lg hover:scale-105 transition-transform duration-500">
+                            <a href="<?php echo $img['url']; ?>" data-fancybox="gallery" class="aspect-square rounded-xl overflow-hidden shadow-lg hover:scale-105 transition-transform duration-500 block">
                                 <img src="<?php echo $img['url']; ?>" class="w-full h-full object-cover">
-                            </div>
+                            </a>
                         <?php endforeach; else : ?>
                             <div class="aspect-square rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse"></div>
                             <div class="aspect-square rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse delay-75"></div>

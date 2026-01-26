@@ -11275,12 +11275,12 @@ var common = {
       lng: -92.6376
     };
     navigator.geolocation.getCurrentPosition(function (position) {
-      // Store user position but center map on San Cristóbal
+      // Store user position and center map on it
       userPosition = {
         lat: position.coords.latitude,
         lng: position.coords.longitude
       };
-      _this2.renderMap(sanCristobalCenter);
+      _this2.renderMap(userPosition);
       _this2.fetchWordPressPlaces();
     }, function () {
       // If geolocation fails, still use San Cristóbal

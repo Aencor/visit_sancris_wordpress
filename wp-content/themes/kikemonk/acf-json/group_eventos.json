@@ -8,7 +8,7 @@
             "name": "fecha",
             "type": "date_picker",
             "display_format": "d/m/Y",
-            "return_format": "d/m/Y"
+            "return_format": "Ymd"
         },
         {
             "key": "field_65abc12345692",

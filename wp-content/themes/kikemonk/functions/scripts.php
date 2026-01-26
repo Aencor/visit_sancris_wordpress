@@ -138,7 +138,6 @@ function theme_scripts() {
     // Font Awesome
     wp_enqueue_style("font-awesome", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css", [], "6.4.0");
 	
-	// Main Style
 	wp_enqueue_style(
 		"master",
 		get_template_directory_uri() . "/assets/build/style.css",
@@ -146,6 +145,25 @@ function theme_scripts() {
 		"1.1",
 		"all"
 	);
+
+    // Dynamic Colors from ACF
+    $brand_blue = get_field('color_brand_blue', 'option') ?: '#1e3a8a';
+    $brand_gold = get_field('color_brand_gold', 'option') ?: '#d97706';
+    
+    $custom_css = "
+        :root {
+            --brand-blue: {$brand_blue};
+            --brand-gold: {$brand_gold};
+        }
+    ";
+    wp_add_inline_style('master', $custom_css);
+
+    // Fancybox
+    wp_enqueue_style("fancybox", "https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css", [], "5.0");
+    wp_enqueue_script("fancybox", "https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js", [], "5.0", true);
+    
+    // Init Fancybox
+    wp_add_inline_script('fancybox', 'Fancybox.bind("[data-fancybox]", {});');
 }
 
 add_action("wp_enqueue_scripts", "theme_scripts", 9999);

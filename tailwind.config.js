@@ -5,8 +5,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'brand-blue': '#1e3a8a',
-        'brand-gold': '#d97706',
+        'brand-blue': 'var(--brand-blue)',
+        'brand-gold': 'var(--brand-gold)',
       },
       fontFamily: {
         'sans': ['Inter', 'sans-serif'],
