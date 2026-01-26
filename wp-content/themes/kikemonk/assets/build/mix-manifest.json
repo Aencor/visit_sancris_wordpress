@@ -1,5 +1,9 @@
 {
-    "/main.js": "/main.js",
-    "/map-directory.js": "/map-directory.js",
-    "/style.css": "/style.css"
+    "/main.js": "/main.js?id=868100c18b1b3f087f51c1e8c1300997",
+    "/map-directory.js": "/map-directory.js?id=0a22675f66b0ecdab727764d7df81c55",
+    "/style.css": "/style.css?id=3e5f51bb73e839bbd5a226e72061b5f4",
+    "/master.min.css": "/master.min.css?id=d41d8cd98f00b204e9800998ecf8427e",
+    "/manifest.min.js": "/manifest.min.js?id=9f25126fb3a2512b58bd88b1eb1649b9",
+    "/vendor.min.js": "/vendor.min.js?id=d41d8cd98f00b204e9800998ecf8427e",
+    "/main.min.js": "/main.min.js?id=868100c18b1b3f087f51c1e8c1300997"
 }
