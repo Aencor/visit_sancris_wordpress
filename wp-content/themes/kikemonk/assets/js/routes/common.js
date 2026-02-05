@@ -65,6 +65,24 @@ const common = {
       }
     });
 
+    // --- Mobile Search Toggle ---
+    $('#mobile-search-toggle').on('click', () => {
+      const container = $('#header-search-container');
+      container.toggleClass('hidden');
+      if (!container.hasClass('hidden')) {
+        setTimeout(() => $('#header-search').focus(), 100);
+      }
+    });
+
+    // Close search on click outside (mobile)
+    $(document).on('click', (e) => {
+      if (window.innerWidth < 768) { // md breakpoint
+        if (!$(e.target).closest('#header-search-container').length && !$(e.target).closest('#mobile-search-toggle').length) {
+          $('#header-search-container').addClass('hidden');
+        }
+      }
+    });
+
     // --- Dropdown Logic ---
     $('#cat-dropdown-btn').on('click', function (e) {
       e.stopPropagation();
@@ -121,15 +139,22 @@ const common = {
     });
 
     // --- Events Toggle ---
+    // --- Events Toggle ---
     $('#toggle-events-btn').on('click', (e) => {
       const btn = $(e.currentTarget);
       const container = $('#events-container');
+      const cardsWrapper = $('#cards-container').parent().parent(); // Targeted wrapper
 
       if (container.hasClass('hidden')) {
         // Show
-        container.removeClass('hidden').addClass('flex'); // Ensure flex is applied if needed, though Tailwind 'flex' class is already there
+        container.removeClass('hidden').addClass('flex');
         btn.removeClass('bg-white border-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200')
           .addClass('bg-brand-gold text-white border-transparent');
+
+        // On mobile, hide cards to prevent overlap
+        if (window.innerWidth < 768) {
+          gsap.to(cardsWrapper, { y: 100, opacity: 0, duration: 0.3, onComplete: () => cardsWrapper.addClass('hidden') });
+        }
 
         this.renderEventMarkers();
 
@@ -140,6 +165,12 @@ const common = {
         gsap.to(container, {
           y: 20, opacity: 0, duration: 0.3, onComplete: () => {
             container.addClass('hidden').removeClass('flex');
+
+            // Restore Cards
+            if (cardsWrapper.hasClass('hidden')) {
+              cardsWrapper.removeClass('hidden');
+              gsap.to(cardsWrapper, { y: 0, opacity: 1, duration: 0.3 });
+            }
           }
         });
 
@@ -168,7 +199,7 @@ const common = {
     // Favorite Button Logic
     $(document).on('click', '#btn-favorite', function () {
       if (!wpData.is_logged_in) {
-        window.location.href = '/login';
+        window.location.href = '/registro';
         return;
       }
 
@@ -201,7 +232,7 @@ const common = {
     $(document).on('click', '.btn-favorite-popup', function (e) {
       e.stopPropagation();
       if (!wpData.is_logged_in) {
-        window.location.href = '/login';
+        window.location.href = '/registro';
         return;
       }
 
@@ -242,27 +273,25 @@ const common = {
 
   handleSearch() {
     const query = $('#main-search').val();
-    if (navigator.geolocation) {
-      gsap.to("#landing-section", {
-        y: -window.innerHeight,
-        duration: 1,
-        ease: "power4.inOut",
-        onComplete: () => $("#landing-section").hide()
-      });
 
-      $("#map-section").removeClass('hidden').addClass('flex flex-col'); // Use Tailwind hidden class and restore flex
-      gsap.fromTo("#map-section",
-        { opacity: 0, y: window.innerHeight },
-        { opacity: 1, y: 0, duration: 1, ease: "power4.inOut" }
-      );
+    // Always trigger the transition
+    gsap.to("#landing-section", {
+      y: -window.innerHeight,
+      duration: 1,
+      ease: "power4.inOut",
+      onComplete: () => $("#landing-section").hide()
+    });
 
-      // Hide fixed theme toggle as we have one in the header now
-      $("#theme-toggle").fadeOut();
+    $("#map-section").removeClass('hidden').addClass('flex flex-col');
+    gsap.fromTo("#map-section",
+      { opacity: 0, y: window.innerHeight },
+      { opacity: 1, y: 0, duration: 1, ease: "power4.inOut" }
+    );
 
-      this.initDirectory(query);
-    } else {
-      alert("Geolocation is not supported by this browser.");
-    }
+    // Hide fixed theme toggle as we have one in the header now
+    $("#theme-toggle").fadeOut();
+
+    this.initDirectory(query);
   },
 
   initDirectory(query) {
@@ -271,21 +300,36 @@ const common = {
     // Always center on San Cristóbal de las Casas
     const sanCristobalCenter = { lat: 16.7371, lng: -92.6376 };
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        // Store user position and center map on it
-        userPosition = { lat: position.coords.latitude, lng: position.coords.longitude };
-        this.renderMap(userPosition);
-        this.fetchWordPressPlaces();
-      },
-      () => {
-        // If geolocation fails, still use San Cristóbal
-        userPosition = sanCristobalCenter;
-        this.renderMap(sanCristobalCenter);
-        this.fetchWordPressPlaces();
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
+    const handleSuccess = (position) => {
+      // Store user position and center map on it
+      userPosition = { lat: position.coords.latitude, lng: position.coords.longitude };
+      this.renderMap(userPosition);
+      this.fetchWordPressPlaces();
+    };
+
+    const handleError = (error) => {
+      console.warn("Location access denied or error: ", error.message || error);
+      // Silently fallback to default
+      useDefault();
+    };
+
+    const useDefault = () => {
+      userPosition = sanCristobalCenter;
+      this.renderMap(sanCristobalCenter);
+      this.fetchWordPressPlaces();
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        handleSuccess,
+        handleError,
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    } else {
+      // Browser doesn't support geolocation, fallback immediately
+      console.warn("Geolocation not supported by this browser.");
+      useDefault();
+    }
   },
 
   fetchWordPressPlaces() {
@@ -437,6 +481,11 @@ const common = {
       container.append(card);
     });
 
+    if (markers.length > 0) {
+      const group = L.featureGroup(markers);
+      map.fitBounds(group.getBounds(), { padding: [50, 50], maxZoom: 16, animate: true, duration: 1 });
+    }
+
     $('.card-item').on('click', function (e) {
       if ($(e.target).closest('button').length) return;
       const id = $(this).data('id');
@@ -472,7 +521,14 @@ const common = {
     } else {
       // Ensure categories is array
       const cats = Array.isArray(categories) ? categories : [categories];
-      this.renderPlaces(allPlaces.filter(p => cats.includes(p.category)));
+      this.renderPlaces(allPlaces.filter(p => {
+        // Check against 'categories' array if present (new logic)
+        if (p.categories && Array.isArray(p.categories) && p.categories.length > 0) {
+          return p.categories.some(c => cats.includes(c));
+        }
+        // Fallback to single category
+        return cats.includes(p.category);
+      }));
     }
   },
 
@@ -487,26 +543,61 @@ const common = {
 
   renderEventsList() {
     const container = $('#events-container');
-    container.empty().append('<h3 class="text-3xl font-black text-brand-gold italic">HOY</h3>');
+    container.empty();
+
+    // Header/Status Card
+    const headerCard = $('<div class="p-4 pb-2"></div>');
+    headerCard.append('<h3 class="text-xl font-black text-brand-gold italic leading-none uppercase">Próximos eventos</h3>');
+    container.append(headerCard);
 
     const renderEvents = (eventos) => {
       if (!eventos || eventos.length === 0) {
-        container.append('<p class="text-slate-400 text-sm mt-4">No hay eventos próximos</p>');
+        headerCard.append('<p class="text-slate-500 dark:text-slate-400 text-sm font-medium mt-2">No hay eventos próximos</p>');
         return;
       }
 
+      const months = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+
       eventos.forEach((evento, index) => {
-        const fecha = evento.acf?.fecha || 'Próximamente';
+        const rawDate = evento.acf?.fecha; // Expecting YYYYMMDD
+        let day = '??';
+        let month = '???';
+
+        if (rawDate && rawDate.length === 8) {
+          const monthIdx = parseInt(rawDate.substring(4, 6)) - 1;
+          day = rawDate.substring(6, 8);
+          month = months[monthIdx] || '???';
+        }
+
         const hora = evento.acf?.hora || '';
         const ubicacion = evento.acf?.ubicacion || '';
-        const datetime = hora ? `${fecha}, ${hora}` : fecha;
-        const title = evento.title.rendered || evento.title; // Handle both API and localized format
+        const title = evento.title.rendered || evento.title;
         const link = evento.link || '#';
+        // Get excerpt without HTML tags and limit length
+        const rawExcerpt = evento.excerpt?.rendered || evento.excerpt || '';
+        const excerpt = rawExcerpt.replace(/<[^>]*>/g, '').substring(0, 60) + (rawExcerpt.length > 60 ? '...' : '');
 
         const card = $(`
-          <div class="bg-white/95 dark:bg-slate-800/95 p-3 rounded-xl shadow-xl opacity-0 cursor-pointer hover:scale-105 transition-transform" data-url="${link}">
-            <h4 class="font-bold text-brand-blue dark:text-white text-sm truncate">${title}</h4>
-            <p class="text-[10px] text-slate-500">${datetime} • ${ubicacion}</p>
+          <div class="bg-transparent p-3 rounded-xl opacity-0 cursor-pointer transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-700 w-full" data-url="${link}">
+            <div class="flex gap-3 items-start">
+                 <!-- Date Box -->
+                 <div class="flex-shrink-0 w-14 h-14 bg-brand-gold/10 dark:bg-brand-gold/20 rounded-lg flex flex-col items-center justify-center text-brand-gold border border-brand-gold/20">
+                     <span class="text-[10px] font-bold uppercase leading-none mb-0.5">${month}</span>
+                     <span class="text-2xl font-black leading-none">${day}</span>
+                 </div>
+                 
+                 <!-- Content -->
+                 <div class="flex-grow min-w-0">
+                    <h4 class="font-bold text-brand-blue dark:text-white text-xs line-clamp-2 leading-tight mb-1" title="${title}">${title}</h4>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-snug line-clamp-2 mb-2">${excerpt}</p>
+                    
+                    <div class="flex items-center gap-2 text-[10px] text-slate-400 font-medium">
+                        ${hora ? `<span>🕒 ${hora}</span>` : ''}
+                        ${hora && ubicacion ? '<span class="opacity-30">•</span>' : ''}
+                        ${ubicacion ? `<span class="truncate">📍 ${ubicacion}</span>` : ''}
+                    </div>
+                 </div>
+            </div>
           </div>
         `);
 

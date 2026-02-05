@@ -14,10 +14,18 @@
         
         <!-- Search Bar -->
         <?php if (is_front_page()): ?>
-        <div class="relative flex-grow max-w-md min-w-[150px]">
+        <!-- Mobile Search Toggle -->
+        <button id="mobile-search-toggle" type="button" class="md:hidden p-2 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </button>
+
+        <!-- Search Input Container -->
+        <div id="header-search-container" class="absolute top-[100%] left-0 w-full bg-white dark:bg-slate-800 p-3 shadow-lg border-t border-slate-100 dark:border-slate-700 hidden md:relative md:top-auto md:left-auto md:w-auto md:bg-transparent md:p-0 md:shadow-none md:border-none md:flex md:flex-grow md:max-w-md md:min-w-[150px] z-[2000] md:z-auto">
              <input type="text" id="header-search" placeholder="Buscar..." 
-                class="w-full py-2 px-4 rounded-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm focus:border-brand-blue dark:focus:border-brand-gold focus:ring-2 focus:ring-brand-blue/20 dark:text-white focus:outline-none shadow-sm transition-all">
-             <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400">
+                class="w-full py-2 px-4 rounded-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm focus:border-brand-blue dark:focus:border-brand-gold focus:ring-2 focus:ring-brand-blue/20 dark:text-white focus:outline-none shadow-sm transition-all text-slate-800">
+             <div class="absolute right-6 md:right-3 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
@@ -34,7 +42,7 @@
             <!-- Categories Dropdown -->
             <div class="relative relative-dropdown">
                 <button id="cat-dropdown-btn" class="px-3 py-1.5 rounded-full bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 hover:border-brand-blue transition-all shadow-sm text-xs font-medium flex items-center gap-1.5">
-                    <span>🏷️</span> <span class="hidden md:inline">Categorías</span> <span class="text-[10px]">▼</span>
+                    <span>🏷️</span> <span>Categorías</span> <span class="text-[10px]">▼</span>
                 </button>
                 
                 <!-- Dropdown Menu -->
@@ -65,12 +73,12 @@
 
             <!-- Events Toggle -->
              <button class="event-toggle px-3 py-1.5 rounded-full bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 hover:border-brand-gold transition-all shadow-sm text-xs font-medium flex items-center gap-1.5 group" id="toggle-events-btn">
-                <span class="grayscale group-hover:grayscale-0 transition-all">📅</span> <span class="hidden md:inline">Eventos</span>
+                <span class="grayscale group-hover:grayscale-0 transition-all">📅</span> <span>Eventos</span>
             </button>
             <?php endif; ?>
 
             <!-- Profile Link -->
-            <a href="<?php echo is_user_logged_in() ? home_url('/mi-perfil') : home_url('/login'); ?>" class="p-0.5 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors flex items-center justify-center w-10 h-10 group relative" title="Mi Perfil">
+            <a href="<?php echo is_user_logged_in() ? home_url('/mi-perfil') : home_url('/registro'); ?>" class="p-0.5 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors flex items-center justify-center w-10 h-10 group relative" title="Mi Perfil">
                 <div class="w-full h-full rounded-full overflow-hidden relative">
                     <?php 
                     if (is_user_logged_in()) {

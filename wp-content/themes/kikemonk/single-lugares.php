@@ -3,7 +3,28 @@
 
 <?php if (have_posts()) : while (have_posts()) : the_post(); 
     // ACF Fields
-    $category = get_field('categoria') ?: 'General';
+    // ACF Fields
+    $category_slug = get_field('categoria');
+    
+    // Try to get from Taxonomy first (cleaner, Spanish)
+    $terms = get_the_terms(get_the_ID(), 'tipo_lugar');
+    if ($terms && !is_wp_error($terms)) {
+        $category = $terms[0]->name;
+    } else {
+        // Fallback to ACF with mapping
+        $cat_map = [
+            'restaurant' => 'Restaurante',
+            'park' => 'Parque',
+            'museum' => 'Museo',
+            'shop' => 'Tienda',
+            'bar' => 'Bar',
+            'cafe' => 'Cafetería',
+            'hotel' => 'Hotel'
+        ];
+        $category = isset($cat_map[$category_slug]) ? $cat_map[$category_slug] : ucfirst($category_slug);
+    }
+    
+    $category = $category ?: 'General';
     $rating = get_field('puntuacion') ?: '4.8';
     $horario = get_field('horario') ?: 'Abierto 09:00 - 21:00';
     $ubicacion = get_field('ubicacion');
@@ -62,10 +83,15 @@
                         <span class="text-brand-gold text-xl">★</span>
                         <span class="font-bold"><?php echo $rating; ?></span>
                     </div>
+                    <?php 
+                    $is_open = kikemonk_is_open($horario);
+                    if ($is_open !== null): // Only show if we could determine status
+                    ?>
                     <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                        <span class="text-sm font-medium">Abierto ahora</span>
+                        <span class="w-2 h-2 rounded-full <?php echo $is_open ? 'bg-green-500 animate-pulse' : 'bg-red-500'; ?>"></span>
+                        <span class="text-sm font-medium"><?php echo $is_open ? 'Abierto ahora' : 'Cerrado ahora'; ?></span>
                     </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -209,9 +235,9 @@
 
                         <!-- Stats Card -->
                         <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-xl">
-                            <ul class="space-y-4">
+                            <ul class="space-y-6 list-none pl-0">
                                 <?php if ($puntuacion = get_field('puntuacion')): ?>
-                                <li class="flex justify-between items-center text-lg">
+                                <li class="flex flex-col md:flex-row md:justify-between md:items-center text-lg gap-2">
                                     <span class="text-slate-500 dark:text-slate-400 font-bold">Puntuación</span>
                                     <span class="text-xl font-black text-brand-gold">⭐ <?php echo esc_html($puntuacion); ?></span>
                                 </li>

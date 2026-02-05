@@ -20,7 +20,8 @@ function theme_scripts() {
 	$args = array(
 		'post_type' => 'lugares',
 		'posts_per_page' => -1,
-		'post_status' => 'publish'
+		'post_status' => 'publish',
+        'orderby' => array('menu_order' => 'ASC', 'date' => 'DESC') // Prioritize custom order
 	);
 	$places_query = new WP_Query($args);
 	$places_data = array();
@@ -50,9 +51,13 @@ function theme_scripts() {
                 $category = 'restaurant'; // default fallback key
                 $label = 'Restaurante'; // default fallback label
                 $icon = null;
+                $categories = array();
 
                 if ($terms && !is_wp_error($terms)) {
-                    $term = reset($terms); // Get first term
+                    foreach ($terms as $t) {
+                        $categories[] = $t->slug;
+                    }
+                    $term = reset($terms); // Get first term for primary display
                     $category = $term->slug;
                     $label = $term->name;
                     // Extract Emoji (First char)
@@ -62,6 +67,7 @@ function theme_scripts() {
                     $acf_cat = get_field('categoria');
                     if ($acf_cat) {
                         $category = $acf_cat;
+                        $categories[] = $acf_cat; 
                         $label = ucfirst($acf_cat); // Basic formatting
                     }
                 }
@@ -69,7 +75,8 @@ function theme_scripts() {
 				$places_data[] = array(
 					'id' => get_the_ID(),
 					'name' => get_the_title(),
-					'category' => $category,
+					'category' => $category, // Keep for backward compatibility
+                    'categories' => $categories, // New field with all categories
                     'label' => $label,
                     'icon' => $icon,
 					'description' => $custom_desc ?: get_the_excerpt(), // Use custom field or fallback to excerpt
@@ -89,8 +96,15 @@ function theme_scripts() {
 		'posts_per_page' => 10,
 		'post_status' => 'publish',
 		'meta_key' => 'fecha',
-		'orderby' => 'meta_value',
-		'order' => 'ASC'
+		'orderby' => array('menu_order' => 'ASC', 'meta_value' => 'ASC', 'date' => 'DESC'),
+        'meta_query' => array(
+            array(
+                'key' => 'fecha',
+                'value' => date('Ymd'),
+                'compare' => '>=',
+                'type' => 'NUMERIC'
+            )
+        )
 	);
 	$events_query = new WP_Query($args_events);
 	$events_data = array();

@@ -9,21 +9,16 @@
     </div>
 
     <!-- Search Container -->
-    <div class="w-full max-w-2xl text-center z-50 px-4 relative">
+    <div class="w-full max-w-2xl text-center z-50 px-4 relative flex flex-col items-center">
         <h1 class="text-3xl md:text-5xl font-bold mb-8 text-brand-blue dark:text-brand-gold tracking-tight">Descubre San Cristóbal</h1>
         <h4 class="text-xl md:text-2xl font-bold mb-8 text-brand-blue dark:text-brand-gold tracking-tight opacity-80">Discover San Cristóbal</h4>
         
-        <div class="relative group">
-            <input type="text" id="main-search" placeholder="Restaurantes, Parques, Museos..." 
-                class="w-full p-4 md:p-6 rounded-full text-lg shadow-2xl border-2 border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-brand-gold focus:outline-none transition-all duration-300 pr-16 bg-white text-slate-800 placeholder-slate-400 relative z-50">
-            
-            <button id="search-btn" class="absolute right-2 top-2 bottom-2 bg-brand-blue text-white p-3 md:p-4 rounded-full hover:bg-blue-800 transition-colors duration-300 flex items-center justify-center aspect-square shadow-md z-50">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-            </button>
-        </div>
-        <p class="mt-4 text-slate-500 text-sm md:text-base font-medium relative z-50">Explora San Cristóbal de las Casas a tu alrededor.</p>
+        <button id="search-btn" class="group relative bg-brand-blue hover:bg-blue-800 text-white rounded-full px-16 py-6 shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 flex flex-col items-center justify-center border-4 border-white/20">
+            <span class="text-2xl font-black tracking-wider drop-shadow-md">VAMOS</span>
+            <span class="text-lg font-bold opacity-80 tracking-widest mt-1">GO!</span>
+        </button>
+
+        <p class="mt-8 text-slate-500 text-sm md:text-base font-medium relative z-50">Explora San Cristóbal de las Casas a tu alrededor.</p>
     </div>
 
     <!-- Decorative Background Elements -->
@@ -46,7 +41,7 @@
             <div id="map" class="h-full w-full"></div>
             
             <!-- Events List Overlay (Default Hidden) -->
-            <div id="events-container" class="hidden absolute bottom-6 right-6 z-[1000] w-72 md:w-80 pointer-events-auto flex flex-col gap-3">
+            <div id="events-container" class="hidden absolute bottom-6 right-6 z-[1000] w-72 md:w-80 max-h-[60vh] md:max-h-[500px] overflow-y-auto pointer-events-auto flex flex-col gap-1 px-2 py-2 custom-scrollbar shadow-2xl rounded-2xl bg-white dark:bg-slate-800">
                 <!-- Events will be injected here -->
             </div>
 
@@ -81,10 +76,10 @@
             </div>
 
             <div class="w-full md:flex-grow md:overflow-y-auto p-4 pointer-events-auto">
-                <div id="cards-container" class="flex md:flex-col gap-4 overflow-x-auto md:overflow-visible snap-x snap-mandatory hide-scrollbar pb-4 md:pb-0">
+                <div id="cards-container" class="flex md:flex-col gap-4 overflow-x-auto md:overflow-visible snap-x snap-mandatory hide-scrollbar pb-12 md:pb-0">
                     <div class="hidden md:block p-8 text-center text-slate-400">
                         <div class="animate-pulse mb-2">🔍</div>
-                         Realiza una búsqueda...
+                        Realiza una búsqueda...
                     </div>
                 </div>
             </div>

@@ -25,7 +25,7 @@ function register_custom_post_types() {
         'label'                 => __('Lugar', 'kikemonk'),
         'description'           => __('Directorio de lugares en San Cristóbal', 'kikemonk'),
         'labels'                => $labels_lugares,
-        'supports'              => ['title', 'thumbnail', 'excerpt'], // Removed 'editor'
+        'supports'              => ['title', 'thumbnail', 'excerpt', 'page-attributes'], // Added 'page-attributes' for menu_order
         'hierarchical'          => false,
         'public'                => true,
         'show_ui'               => true,
@@ -53,7 +53,7 @@ function register_custom_post_types() {
     $args_eventos = [
         'label'                 => __('Evento', 'kikemonk'),
         'labels'                => $labels_eventos,
-        'supports'              => ['title', 'thumbnail', 'excerpt'], // Removed 'editor'
+        'supports'              => ['title', 'thumbnail', 'excerpt', 'page-attributes'], // Added 'page-attributes' for menu_order
         'public'                => true,
         'show_in_menu'          => true,
         'menu_icon'             => 'dashicons-calendar-alt',

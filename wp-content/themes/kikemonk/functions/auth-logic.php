@@ -227,3 +227,18 @@ function toggle_user_favorite() {
     wp_send_json_success(array('action' => $action, 'count' => count($favorites)));
 }
 add_action('wp_ajax_toggle_favorite', 'toggle_user_favorite');
+
+// Logout Redirect to Home
+add_filter('logout_redirect', function($redirect_to, $requested_redirect_to, $user) {
+    return home_url();
+}, 10, 3);
+
+// Optional: Ensure wp_logout action doesn't conflict, but the filter above is standard.
+// Removing the explicit wp_redirect in wp_logout action to avoid issues if other plugins hook in.
+// But if we want to FORCE it:
+/*
+add_action('wp_logout', function() {
+    wp_redirect(home_url());
+    exit;
+});
+*/
